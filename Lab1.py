@@ -22,7 +22,7 @@ class ColaFIFO:
     def add(self, item):
         self.queue.append(item)
 
-class PilaLIFO:
+class ColaLIFO:
     def __init__(self):
         self.stack = []
 
