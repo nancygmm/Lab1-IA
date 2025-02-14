@@ -163,8 +163,8 @@ def a_star_search(start, goal, graph, heuristic):
                 pq.put((new_cost + heuristic.get(neighbor, float('inf')), new_cost, neighbor, path + [neighbor]))
     return None, float('inf')
 
-start_node = "Warm-up activities"
-goal_node = "Stretching"
+start_node = "Warm Up - 0"
+goal_node = "Stretching - 13"
 
 bfs_path, bfs_cost = breadth_first_search(start_node, goal_node, graph)
 dfs_path, dfs_cost = depth_first_search(start_node, goal_node, graph)
