@@ -1,5 +1,59 @@
 from queue import Queue, LifoQueue, PriorityQueue
 
+class Nodo:
+    def __init__(self, valor, costo=0):
+        self.valor = valor
+        self.costo = costo
+        self.siguiente = None  
+
+class ColaFIFO:
+    def __init__(self):
+        self.queue = []
+
+    def empty(self):
+        return len(self.queue) == 0
+
+    def top(self):
+        return self.queue[0] if not self.empty() else None
+
+    def pop(self):
+        return self.queue.pop(0) if not self.empty() else None
+
+    def add(self, item):
+        self.queue.append(item)
+
+class PilaLIFO:
+    def __init__(self):
+        self.stack = []
+
+    def empty(self):
+        return len(self.stack) == 0
+
+    def top(self):
+        return self.stack[-1] if not self.empty() else None
+
+    def pop(self):
+        return self.stack.pop() if not self.empty() else None
+
+    def add(self, item):
+        self.stack.append(item)
+
+class ColaPrioridad:
+    def __init__(self):
+        self.pq = PriorityQueue()
+
+    def empty(self):
+        return self.pq.empty()
+
+    def top(self):
+        return self.pq.queue[0] if not self.empty() else None
+
+    def pop(self):
+        return self.pq.get() if not self.empty() else None
+
+    def add(self, priority, item):
+        self.pq.put((priority, item))
+
 graph = {
     "Warm-up activities": [("Skipping Rope", 10), ("Exercise bike", 10), ("Tread Mill", 10), ("Step Mill", 10)],
     "Skipping Rope": [("Dumbbell", 15), ("Barbell", 15)],
@@ -34,21 +88,6 @@ heuristic = {
 }
 
 def breadth_first_search(start, goal, graph):
-    queue = Queue()
-    queue.put((start, [start], 0))
-    visited = set()
-
-    while not queue.empty():
-        node, path, cost = queue.get()
-        if node == goal:
-            return path, cost
-        if node not in visited:
-            visited.add(node)
-            for neighbor, edge_cost in graph.get(node, []):
-                queue.put((neighbor, path + [neighbor], cost + edge_cost))
-    return None, float('inf')
-
-def depth_first_search(start, goal, graph):
     stack = LifoQueue()
     stack.put((start, [start], 0))
     visited = set()
@@ -61,6 +100,21 @@ def depth_first_search(start, goal, graph):
             visited.add(node)
             for neighbor, edge_cost in graph.get(node, []):
                 stack.put((neighbor, path + [neighbor], cost + edge_cost))
+    return None, float('inf')
+
+def depth_first_search(start, goal, graph):
+    queue = Queue()
+    queue.put((start, [start], 0))  
+    visited = set()
+
+    while not queue.empty():
+        node, path, cost = queue.get()
+        if node == goal:
+            return path, cost
+        if node not in visited:
+            visited.add(node)
+            for neighbor, edge_cost in graph.get(node, []):
+                queue.put((neighbor, path + [neighbor], cost + edge_cost)) 
     return None, float('inf')
 
 def uniform_cost_search(start, goal, graph):
@@ -80,17 +134,17 @@ def uniform_cost_search(start, goal, graph):
 
 def greedy_best_first_search(start, goal, graph, heuristic):
     pq = PriorityQueue()
-    pq.put((heuristic.get(start, float('inf')), start, [start]))
+    pq.put((heuristic.get(start, float('inf')), start, [start], 0)) 
     visited = set()
 
     while not pq.empty():
-        _, node, path = pq.get()
+        _, node, path, cost = pq.get()
         if node == goal:
-            return path, 0
+            return path, cost
         if node not in visited:
             visited.add(node)
-            for neighbor, _ in graph.get(node, []):
-                pq.put((heuristic.get(neighbor, float('inf')), neighbor, path + [neighbor]))
+            for neighbor, edge_cost in graph.get(node, []):
+                pq.put((heuristic.get(neighbor, float('inf')), neighbor, path + [neighbor], cost + edge_cost)) 
     return None, float('inf')
 
 def a_star_search(start, goal, graph, heuristic):
@@ -109,8 +163,8 @@ def a_star_search(start, goal, graph, heuristic):
                 pq.put((new_cost + heuristic.get(neighbor, float('inf')), new_cost, neighbor, path + [neighbor]))
     return None, float('inf')
 
-start_node = "Warm up - 0 "
-goal_node = "Stretching - 13"
+start_node = "Warm-up activities"
+goal_node = "Stretching"
 
 bfs_path, bfs_cost = breadth_first_search(start_node, goal_node, graph)
 dfs_path, dfs_cost = depth_first_search(start_node, goal_node, graph)
